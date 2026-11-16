@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#7cc7ff">
+  <meta name="description" content="Balon Udara — petualangan terbang untuk anak-anak. Antar Boni si beruang pulang ke Rumah Awan di puncak langit!">
+  <title>Balon Udara — Petualangan ke Rumah Awan</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%88%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <canvas id="game" aria-label="Permainan balon udara"></canvas>
+  <div class="vignette" aria-hidden="true"></div>
+
+  <!-- ================= HUD ================= -->
+  <div id="hud" class="hud hidden">
+    <div class="hud-top">
+      <div class="hearts" id="hearts" aria-label="Nyawa">
+        <span class="heart"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></span>
+        <span class="heart"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></span>
+        <span class="heart"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></span>
+      </div>
+      <div class="hud-buttons">
+        <button type="button" id="btnSound" class="icon-btn" aria-label="Matikan suara" title="Suara">🔊</button>
+        <button type="button" id="btnPause" class="icon-btn" aria-label="Jeda permainan" title="Jeda">⏸</button>
+      </div>
+    </div>
+    <div class="journey" id="journey">
+      <div class="journey-top">
+        <span class="journey-chapter" id="chapterName">Bab 1 · Padang Rumput</span>
+        <span class="journey-dist" id="journeyDist">1500 m lagi</span>
+      </div>
+      <div class="journey-track">
+        <div class="journey-fill" id="journeyFill"></div>
+        <span class="journey-marker" id="journeyMarker" aria-hidden="true">🎈</span>
+      </div>
+    </div>
+    <div class="powerups" id="powerups">
+      <div class="pu hidden" id="puShield">🫧 <b id="puShieldTime">10</b>s</div>
+      <div class="pu warn-pill hidden" id="tornadoWarn">🌪️ Awas puting beliung!</div>
+    </div>
+  </div>
+
+  <!-- ================= START ================= -->
+  <div id="screenStart" class="overlay start-overlay">
+    <button type="button" id="btnSoundMenu" class="icon-btn sound-menu" aria-label="Matikan suara" title="Suara">🔊</button>
+
+    <header class="start-head">
+      <div class="logo-wrap">
+        <span class="logo-balloon" aria-hidden="true">🎈</span>
+        <h1 class="logo">Balon <span>Udara</span></h1>
+      </div>
+      <p class="tagline">Petualangan ke Rumah Awan</p>
+    </header>
+
+    <div class="start-spacer" aria-hidden="true"></div>
+
+    <section class="panel start-panel">
+      <p class="story-line"><b>Boni</b> si beruang ingin pulang. Antar dia ke <b>Rumah Awan</b> di puncak langit!</p>
+      <p class="pick-label">Pilih balonmu</p>
+      <div class="skins" id="skinPicker" role="group" aria-label="Pilih warna balon"></div>
+      <button type="button" class="btn btn-play" id="btnPlay"><span class="play-icon" aria-hidden="true">▶</span> Mulai Petualangan</button>
+      <div class="start-links">
+        <button type="button" class="btn btn-soft" id="btnHelp">📖 Cara Main</button>
+      </div>
+      <div class="journey-chip">🧭 4 bab petualangan</div>
+    </section>
+  </div>
+
+  <!-- ================= HELP ================= -->
+  <div id="screenHelp" class="overlay dim hidden">
+    <section class="panel help-panel">
+      <h2 class="panel-title">Cara Main</h2>
+      <ul class="help-list">
+        <li>
+          <span class="help-emoji" aria-hidden="true">✋</span>
+          <div><b>Tekan &amp; tahan</b><p>Tap dan tahan layar, klik mouse, atau tekan tombol Spasi untuk terbang ke atas.</p></div>
+        </li>
+        <li>
+          <span class="help-emoji" aria-hidden="true">↔️</span>
+          <div><b>Belok kiri kanan</b><p>Geser jari atau mouse, atau pakai tombol panah untuk mengarahkan balon.</p></div>
+        </li>
+        <li>
+          <span class="help-emoji" aria-hidden="true">🧭</span>
+          <div><b>Ikuti petualangan</b><p>Terbang melewati 4 bab langit. Lihat progres perjalanan di atas layar.</p></div>
+        </li>
+        <li>
+          <span class="help-emoji" aria-hidden="true">🌪️</span>
+          <div><b>Hati-hati</b><p>Burung dan angin puting beliung bisa mengurangi nyawa. Terbang menghindar!</p></div>
+        </li>
+        <li>
+          <span class="help-emoji" aria-hidden="true">❤️</span>
+          <div><b>Benda ajaib</b><p>Hati memulihkan nyawa, gelembung 🫧 melindungimu dari bahaya.</p></div>
+        </li>
+        <li>
+          <span class="help-emoji" aria-hidden="true">🏠</span>
+          <div><b>Sampai tujuan</b><p>Capai ketinggian 1.500 m untuk mengantar Boni pulang ke Rumah Awan.</p></div>
+        </li>
+      </ul>
+      <button type="button" class="btn btn-play" id="btnHelpClose">Mengerti!</button>
+    </section>
+  </div>
+
+  <!-- ================= PAUSE ================= -->
+  <div id="screenPause" class="overlay dim hidden">
+    <section class="panel small-panel">
+      <div class="panel-emoji" aria-hidden="true">☁️</div>
+      <h2 class="panel-title">Istirahat dulu</h2>
+      <p class="muted">Balonmu menunggu di atas awan.</p>
+      <button type="button" class="btn btn-play" id="btnResume">Lanjut Main</button>
+      <button type="button" class="btn btn-soft" id="btnPauseMenu">Kembali ke Menu</button>
+    </section>
+  </div>
+
+  <!-- ================= GAME OVER ================= -->
+  <div id="screenOver" class="overlay dim hidden">
+    <section class="panel over-panel">
+      <div class="panel-emoji" aria-hidden="true">🎈</div>
+      <h2 class="panel-title" id="overTitle">Balonnya Mendarat</h2>
+      <p class="muted" id="overMessage">Tidak apa-apa, ayo coba lagi ya!</p>
+      <div class="adventure-result">
+        <span>Perjalananmu berhenti di</span>
+        <b id="overChapter">Bab 1 · Padang Rumput</b>
+        <div class="mini-track"><div class="mini-fill" id="overFill"></div></div>
+        <small id="overDistance">1.500 m lagi ke Rumah Awan</small>
+      </div>
+      <button type="button" class="btn btn-play" id="btnReplay">Coba Lagi</button>
+      <button type="button" class="btn btn-soft" id="btnHome">Kembali ke Menu</button>
+    </section>
+  </div>
+
+  <!-- ================= WIN ================= -->
+  <div id="screenWin" class="overlay win-overlay hidden">
+    <section class="panel win-panel">
+      <div class="win-badge" aria-hidden="true">🏠</div>
+      <h2 class="panel-title">Sampai di Rumah Awan!</h2>
+      <p class="muted">Boni sudah pulang ke keluarganya. Terima kasih sudah menemaninya!</p>
+      <div class="chapter-dots" id="winDots" aria-hidden="true"></div>
+      <button type="button" class="btn btn-play" id="btnWinReplay">Petualangan Baru</button>
+      <button type="button" class="btn btn-soft" id="btnWinHome">Kembali ke Menu</button>
+    </section>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
